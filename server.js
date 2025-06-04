@@ -2,6 +2,12 @@ const express = require('express');
 const app = express();
 
 // API route
+
+app.get('/', (req, res) => {
+  res.send('Timestamp Microservice is running. Use /api/:date?');
+});
+
+
 app.get('/api/:date?', (req, res) => {
   const dateParam = req.params.date;
   let date;
