@@ -8,7 +8,7 @@ app.use(express.static('public'));
 // Root endpoint (optional frontpage)
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
-});
+})
 
 // API endpoint
 app.get('/api/:date?', (req, res) => {
