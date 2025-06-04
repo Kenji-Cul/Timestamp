@@ -1,38 +1,43 @@
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 3000;
 
-// Enable static files (optional frontpage)
-app.use(express.static('public'));
-
-// Root endpoint (optional frontpage)
+// Root route (optional: for browser landing page)
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
-})
+  res.send('Timestamp Microservice is running. Use /api/:date?');
+});
 
 // API endpoint
 app.get('/api/:date?', (req, res) => {
-  let dateInput = req.params.date;
-
+  let dateString = req.params.date;
   let date;
-  if (!dateInput) {
+
+  // Case 1: No date provided => use current date
+  if (!dateString) {
     date = new Date();
-  } else if (!isNaN(dateInput)) {
-    date = new Date(parseInt(dateInput)); // handle unix timestamp
-  } else {
-    date = new Date(dateInput); // handle ISO date string
+  }
+  // Case 2: dateString is a Unix timestamp (number string)
+  else if (!isNaN(dateString)) {
+    date = new Date(parseInt(dateString));
+  }
+  // Case 3: dateString is a regular date string
+  else {
+    date = new Date(dateString);
   }
 
+  // Handle invalid date
   if (date.toString() === "Invalid Date") {
     return res.json({ error: "Invalid Date" });
   }
 
-  res.json({
+  // Return valid timestamp response
+  return res.json({
     unix: date.getTime(),
     utc: date.toUTCString()
   });
 });
 
+// Start the server
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`✅ Server running on port ${port}`);
 });
