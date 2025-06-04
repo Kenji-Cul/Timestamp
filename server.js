@@ -1,43 +1,37 @@
 const express = require('express');
 const app = express();
 
-// Root route (optional: for browser landing page)
-app.get('/', (req, res) => {
-  res.send('Timestamp Microservice is running. Use /api/:date?');
-});
-
-// API endpoint
+// API route
 app.get('/api/:date?', (req, res) => {
-  let dateString = req.params.date;
+  const dateParam = req.params.date;
+
   let date;
 
-  // Case 1: No date provided => use current date
-  if (!dateString) {
+  if (!dateParam) {
+    // No parameter provided → return current date
     date = new Date();
-  }
-  // Case 2: dateString is a Unix timestamp (number string)
-  else if (!isNaN(dateString)) {
-    date = new Date(parseInt(dateString));
-  }
-  // Case 3: dateString is a regular date string
-  else {
-    date = new Date(dateString);
+  } else if (!isNaN(dateParam) && /^\d+$/.test(dateParam)) {
+    // If it's a valid numeric timestamp string → treat as UNIX milliseconds
+    date = new Date(parseInt(dateParam));
+  } else {
+    // Try parsing as a normal date string
+    date = new Date(dateParam);
   }
 
-  // Handle invalid date
-  if (date.toString() === "Invalid Date") {
-    return res.json({ error: "Invalid Date" });
+  // Check for invalid date
+  if (date.toString() === 'Invalid Date') {
+    return res.json({ error: 'Invalid Date' });
   }
 
-  // Return valid timestamp response
-  return res.json({
+  // Return valid date in both formats
+  res.json({
     unix: date.getTime(),
     utc: date.toUTCString()
   });
 });
 
-// Start the server
+// Start server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`✅ Server running on port ${port}`);
+  console.log(`✅ Server is running on port ${port}`);
 });
