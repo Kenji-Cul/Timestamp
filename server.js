@@ -4,26 +4,21 @@ const app = express();
 // API route
 app.get('/api/:date?', (req, res) => {
   const dateParam = req.params.date;
-
   let date;
 
   if (!dateParam) {
-    // No parameter provided → return current date
     date = new Date();
   } else if (!isNaN(dateParam) && /^\d+$/.test(dateParam)) {
-    // If it's a valid numeric timestamp string → treat as UNIX milliseconds
     date = new Date(parseInt(dateParam));
   } else {
-    // Try parsing as a normal date string
     date = new Date(dateParam);
   }
 
-  // Check for invalid date
+  // ✅ Always respond with JSON
   if (date.toString() === 'Invalid Date') {
-    return res.json({ error: 'Invalid Date' });
+    return res.json({ error: 'Invalid Date' }); // This is what FCC checks
   }
 
-  // Return valid date in both formats
   res.json({
     unix: date.getTime(),
     utc: date.toUTCString()
